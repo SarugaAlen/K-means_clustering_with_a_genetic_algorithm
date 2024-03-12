@@ -20,6 +20,6 @@ class Clustering(Problem): #ze tu dimenzijo doloc
     # 2 korak za vsako instanco izracunas razdaljo do vseh centroidov
      # 3 korak dodeli instance najblizjemu centroidu
     # 4 korak izracunas kakovost
-#minimization manjsi fitnes je bolsi
+    #minimization manjsi fitnes je bolsi
 
-#helper funckija 2 in 3 korak
+    #helper funckija 2 in 3 korak
