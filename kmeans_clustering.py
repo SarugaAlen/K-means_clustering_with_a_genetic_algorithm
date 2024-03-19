@@ -7,7 +7,7 @@ def perform_kmeans_clustering(data, n_clusters=3):
     os.environ['OMP_NUM_THREADS'] = '1'
 
     ''' Inicializacija KMeans gručenja '''
-    kmeans = KMeans(n_clusters=n_clusters, init='random', n_init='auto', max_iter=300, random_state=42)
+    kmeans = KMeans(n_clusters=n_clusters, init='random', n_init='auto', max_iter=300)
     kmeans.fit(data)
 
     ''' Pridobivanje razredov '''
