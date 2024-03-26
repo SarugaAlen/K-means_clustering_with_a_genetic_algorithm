@@ -50,7 +50,6 @@ for i in range(1):
     cluster_centers = x.reshape((num_clusters, num_features))
     print("Cluster Centers:")
     print(cluster_centers)
-
     '''' PRVI DEL OKEJ '''
 
     # best_solution, _ = algorithm.run(clustering_task)
