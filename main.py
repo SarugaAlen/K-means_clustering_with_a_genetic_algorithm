@@ -1,3 +1,4 @@
+
 from niapy.algorithms.basic import GeneticAlgorithm
 from sklearn.cluster import KMeans
 from niapy.task import Task
@@ -23,45 +24,73 @@ def visualize_clusters(data, labels, centroids, title):
 
 
 iris_dataset = load_iris()
-
 """Tukaj uporabim samo 2 feature-a, ker je lažje vizualizirati rezultate clusteringa."""
-# iris_data = iris_dataset.data[:, :2]
 # perform_kmeans_clustering(iris_data)
 
-a = 100
 for i in range(1):
     iris_data = iris_dataset.data[:, :2]
-    iris_target = iris_dataset.target
-    print("To je data", iris_data)
-    print(".................................")
-    print("to je target", iris_target)
-
     my_instances = iris_data
     num_clusters = 2
     num_features = 2
+
     clustering_problem = Clustering(num_clusters=num_clusters, dimension=num_features, instances=my_instances, lower=0,
                                     upper=1)
-    # clustering_task = Task(problem=clustering_problem, max_evals=100)
 
-    # algorithm = GeneticAlgorithm(population_size=50, crossover_probability=0.9, mutation_probability=0.2)
+    task = Task(problem=clustering_problem, max_evals=100)
 
-    x = np.array([5.5, 8, 8, 3.5])
+    algorithm = GeneticAlgorithm(population_size=50, crossover_probability=0.9, mutation_probability=0.2)
 
-    cluster_centers = x.reshape((num_clusters, num_features))
-    print("Cluster Centers:")
-    print(cluster_centers)
-    '''' PRVI DEL OKEJ '''
+    best = algorithm.run(task)
 
-    # best_solution, _ = algorithm.run(clustering_task)
+    print("Best solution found: ", best)
 
-# print(f"Best Solution - {best_solution}")
 
-# Perform clustering with the optimized solution
-# optimized_centroids = np.array(best_solution).reshape((num_clusters, num_features))
-# labels_optimized = pairwise_distances_argmin_min(iris_data, optimized_centroids)[0]
 
-# Visualize the clustering results after optimization
-# visualize_clusters(iris_data, labels_optimized, optimized_centroids, 'Genetic Algorithm Optimized Clustering')
+"""
+clusters = []
+cluster_centers = []
+clusters_sum_dist = []
+all_clusters_dists = []
 
-# clustering_quality = clustering_problem._evaluate(best_solution)
-# print("Clustering Quality:", clustering_quality)
+random_indices = np.random.choice(iris_data.shape[0], size=num_clusters, replace=False)
+cluster_centers = np.array(iris_data[random_indices])
+
+print("Initial Cluster Centers:")
+print(cluster_centers)
+'''' PRVI DEL OKEJ '''
+
+''' DRUGI DEL izracun razdalje do centroidov '''
+for clust_idx in range(num_clusters):
+    cluster_center_dists = euclidean_distance(my_instances, cluster_centers[clust_idx ])
+    all_clusters_dists.append(np.array(cluster_center_dists))
+
+all_clusters_dists = np.array(all_clusters_dists)
+print("Distances to Cluster Centers:")
+print(all_clusters_dists)
+
+''' TRETJI del dodeli instance najblizjemu centroidu '''
+cluster_indices = np.argmin(all_clusters_dists, axis=0)
+print("Cluster Indices:")
+print(cluster_indices)
+
+for clust_idx in range(num_clusters):
+    cluster_instances = np.where(cluster_indices == clust_idx)[0]
+    clusters.append(cluster_instances)
+
+    if len(cluster_instances) == 0:
+        clusters_sum_dist.append(0)
+    else:
+        clusters_sum_dist.append(np.sum(all_clusters_dists[clust_idx, cluster_instances]))
+
+clusters_sum_dist = np.array(clusters_sum_dist)
+
+print("Clusters:")
+print(clusters)
+print("Clusters Sum Distances:")
+print(clusters_sum_dist)
+
+''' CETRTI DEL izracun kakovosti '''
+
+fitness = 1.0 / np.sum(clusters_sum_dist + 0.00000001)
+print(fitness)
+"""
