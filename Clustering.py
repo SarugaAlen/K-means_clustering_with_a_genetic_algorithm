@@ -1,6 +1,5 @@
 import numpy as np
 from niapy.problems import Problem
-from sklearn.metrics import pairwise_distances_argmin_min
 
 
 class Clustering(Problem):
@@ -9,8 +8,8 @@ class Clustering(Problem):
         self.num_clusters = num_clusters
         self.instances = instances
 
-    def euclidean_distance(X, Y):
-        return np.sqrt(np.sum(np.power(X - Y, 2), axis=1))
+    def euclidean_distance(self, Y):
+        return np.sqrt(np.sum(np.power(self.instances - Y, 2), axis=1))
 
     # 1 korak iz x dobis lokacijen za vse centroide
 
@@ -19,16 +18,15 @@ class Clustering(Problem):
     # 4 korak izracunas kakovost
     # minimization manjsi fitnes je bolsi
     def _evaluate(self, x):
-        print("Initial x.",x)
         clusters = []
         clusters_sum_dist = []
         all_clusters_dists = []
-        # Step 1: Extract cluster centers from the solution vector 'x'
-        cluster_centers = x.reshape((self.num_clusters, self.dimension))
+
+        cluster_centers = x
 
         # Step 2: Compute distances from instances to cluster centers
         for clust_idx in range(self.num_clusters):
-            cluster_center_dists = self.euclidean_distance(self.instances, cluster_centers[clust_idx])
+            cluster_center_dists = self.euclidean_distance(cluster_centers[clust_idx])
             all_clusters_dists.append(np.array(cluster_center_dists))
 
         all_clusters_dists = np.array(all_clusters_dists)
