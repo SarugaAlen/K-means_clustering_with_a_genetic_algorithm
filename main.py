@@ -21,14 +21,13 @@ def visualize_clusters(data, labels, centroids, num_clusters, title):
     # Plot cluster centers with circles colored according to the cluster they belong to
     for idx, centroid in enumerate(centroids):
         cluster_color = cmap(idx % num_clusters)  # Use modulo to ensure cyclic selection of colors
-        plt.scatter(centroid[0], centroid[1], s=100, marker='o', c=[cluster_color], edgecolor='black',
-                    label=f'Cluster Center {idx + 1}')
+        plt.scatter(centroid[0], centroid[1], s=100, marker='o', c=[cluster_color], edgecolor='black')
 
     plt.title(title)
     plt.xlabel('Feature')
     plt.ylabel('Feature')
-    #plt.legend()
     plt.show()
+
 
 iris_dataset = load_iris()
 iris_data = iris_dataset.data[:, :2]
@@ -40,23 +39,20 @@ normalized_data = scaler.fit_transform(iris_data)
 num_clusters = 2
 num_features = 2
 
-for i in range(10):
-    # Define the clustering problem
-    clustering_problem = Clustering(num_clusters=num_clusters, dimension=num_features*num_clusters, instances=normalized_data, lower=0, upper=1)
 
-    # Define the optimization task
-    task = Task(problem=clustering_problem, max_evals=1000)
+clustering_problem = Clustering(num_clusters=num_clusters, num_features=num_features, dimension=num_features*num_clusters, instances=normalized_data, lower=0, upper=1)
 
-    # Initialize and run the genetic algorithm
-    algorithm = GeneticAlgorithm(population_size=100, crossover_probability=0.8, mutation_probability=0.1)
-    best = algorithm.run(task)
+task = Task(problem=clustering_problem, max_evals=10000)
 
-    print(best)
-    # Extract the centroids
-    centroids = best[0].reshape(num_clusters, num_features)
+algorithm = GeneticAlgorithm(population_size=100, crossover_probability=0.8, mutation_probability=0.25)
+best = algorithm.run(task)
 
-    print("Best solution found:", best)
-    print("Extracted centroids:", centroids)
+print(best)
+# Extract the centroids
+centroids = best[0].reshape(num_clusters, num_features)
 
-    # Visualize the clusters with the optimized centroids
-    visualize_clusters(normalized_data, iris_labels, centroids, num_clusters, "Clusters with Optimized Centroids")
+print("Best solution found:", best)
+print("Extracted centroids:", centroids)
+
+# Visualize the clusters with the optimized centroids
+visualize_clusters(normalized_data, iris_labels, centroids, num_clusters, "Clusters with Optimized Centroids")
