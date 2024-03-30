@@ -1,51 +1,51 @@
 import numpy as np
+from matplotlib import pyplot as plt
 from niapy.problems import Problem
 
+
+def euclidean_distance(instance, cluster_center):
+    # Calculate the Euclidean distance between the instance and the cluster center
+    return np.sqrt(np.sum(np.power(instance - cluster_center, 2), axis=1))
+
+
 class Clustering(Problem):
-    def __init__(self, num_clusters, dimension, lower=-10, upper=10, instances=None, *args, **kwargs):
+    def __init__(self, num_clusters, num_features, dimension, lower=0, upper=1, instances=None, *args, **kwargs):
         super().__init__(dimension=dimension, lower=lower, upper=upper, *args, **kwargs)
         self.num_clusters = num_clusters
+        self.num_features = num_features
         self.instances = instances
 
-    def euclidean_distance(self, Y):
-        # Calculate the Euclidean distance between each instance and all cluster centers
-        return np.sqrt(np.sum(np.power(self.instances - Y, 2), axis=1))
-
     def _evaluate(self, x):
-        clusters = []
-        clusters_sum_dist = []
-        all_clusters_dists = []
+        print("Initial x:", x)
 
-        cluster_centers = x
+        all_clusters_dists = []  # (2, 150)
+        clusters = []  # (2, 75)
+        clusters_sum_dist = []  # (2)
 
-        # Step 2: Compute distances from instances to all cluster centers
-        for instance in self.instances:
-            # Calculate distances from each instance to all cluster centers
-            instance_dists = [self.euclidean_distance(cluster_center) for cluster_center in cluster_centers]
-            all_clusters_dists.append(np.array(instance_dists))
+        """Preoblikovanje vektorja rešitve x v matriko oblike (num_clusters, num_features)"""
+        x = x.reshape(self.num_clusters, self.num_features)
+        print("Reshaped x:", x)
+
+        """Izračun razdaljo vsake podatkovne točke do vsakega središča gruče"""
+        for clust_idx in range(self.num_clusters):
+            cluster_center_dist = euclidean_distance(self.instances, x[clust_idx])
+            all_clusters_dists.append(np.array(cluster_center_dist))
 
         all_clusters_dists = np.array(all_clusters_dists)
 
-        # Step 3: Assign instances to the nearest cluster center
-        cluster_indices = np.argmin(all_clusters_dists, axis=1)
+        """Poišče indeks najbližjega središča gruče za vsako podatkovno točko"""
+        cluster_indices = np.argmin(all_clusters_dists, axis=0)
 
+        """Seznam gruč napolni z indeksi podatkovnih točk, dodeljenih posamezni gruči"""
         for clust_idx in range(self.num_clusters):
-            cluster_instances = np.where(cluster_indices == clust_idx)[0]
-            clusters.append(cluster_instances)
-
-            if len(cluster_instances) == 0:
-                # If a cluster has 0 samples, set its total distance to 0
+            clusters.append(np.where(cluster_indices == clust_idx)[0])
+            if len(clusters[clust_idx]) == 0:
                 clusters_sum_dist.append(0)
             else:
-                # Calculate the sum of distances in each cluster
-                clusters_sum_dist.append(np.sum(all_clusters_dists[cluster_instances, clust_idx]))
+                clusters_sum_dist.append(np.sum(all_clusters_dists[clust_idx, clusters[clust_idx]]))
 
         clusters_sum_dist = np.array(clusters_sum_dist)
 
-        # Step 5: Sum the distances in all clusters
-        total_distance = np.sum(clusters_sum_dist)
-
-        # Step 6: Calculate the inverse of the sum of distances (fitness value)
-        fitness = 1.0 / (total_distance + 0.00000001)
+        fitness = 1.0 / (np.sum(clusters_sum_dist) + 0.00000001)
 
         return fitness
