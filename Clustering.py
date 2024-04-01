@@ -1,10 +1,9 @@
 import numpy as np
-from matplotlib import pyplot as plt
 from niapy.problems import Problem
 
 
 def euclidean_distance(instance, cluster_center):
-    # Calculate the Euclidean distance between the instance and the cluster center
+    """Izračuna evklidsko razdaljo med instanco in središčem gruče"""
     return np.sqrt(np.sum(np.power(instance - cluster_center, 2), axis=1))
 
 
@@ -16,15 +15,15 @@ class Clustering(Problem):
         self.instances = instances
 
     def _evaluate(self, x):
-        print("Initial x:", x)
 
-        all_clusters_dists = []  # (2, 150)
-        clusters = []  # (2, 75)
-        clusters_sum_dist = []  # (2)
+        all_clusters_dists = []
+        clusters = []
+        clusters_sum_dist = []
+        cluster_centers = []
 
         """Preoblikovanje vektorja rešitve x v matriko oblike (num_clusters, num_features)"""
         x = x.reshape(self.num_clusters, self.num_features)
-        print("Reshaped x:", x)
+        cluster_centers = x
 
         """Izračun razdaljo vsake podatkovne točke do vsakega središča gruče"""
         for clust_idx in range(self.num_clusters):
@@ -46,6 +45,6 @@ class Clustering(Problem):
 
         clusters_sum_dist = np.array(clusters_sum_dist)
 
-        fitness = 1.0 / (np.sum(clusters_sum_dist) + 0.00000001)
+        fitness = np.sum(clusters_sum_dist)
 
         return fitness
