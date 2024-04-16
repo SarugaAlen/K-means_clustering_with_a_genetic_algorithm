@@ -12,17 +12,12 @@ To clone and use this project, follow these steps:
    ```bash
    git clone https://github.com/SarugaAlen/k-means-clustering-ga.git
     ```
-2. Change the directory to the project directory:
-
-   ```bash
-   cd k-means-clustering-ga
-   ```
-3. Install the required packages:
+2. Install the required packages:
 
    ```bash
     poetry install
     ```
-4. Run the project:
+3. Run the project:
 
    ```bash
    poetry run python main.py
