@@ -10,14 +10,19 @@ To clone and use this project, follow these steps:
 1. Clone the repository to your local machine:
 
    ```bash
-   git clone https://github.com/SarugaAlen/k-means-clustering-ga.git
+   git clone https://github.com/SarugaAlen/k-means_clustering_with_genetic_algorithm.git
     ```
-2. Install the required packages:
+2. Change the directory to the project directory:
+
+   ```bash
+   cd k-means_clustering_with_genetic_algorithm
+   ```
+3. Install the required packages:
 
    ```bash
     poetry install
     ```
-3. Run the project:
+4. Run the project:
 
    ```bash
    poetry run python main.py
