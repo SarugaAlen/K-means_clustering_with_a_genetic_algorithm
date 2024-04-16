@@ -13,6 +13,7 @@ class Clustering(Problem):
         self.num_clusters = num_clusters
         self.num_features = num_features
         self.instances = instances
+        self.cluster_indices = None
 
     def _evaluate(self, x):
 
@@ -34,6 +35,7 @@ class Clustering(Problem):
 
         """Poišče indeks najbližjega središča gruče za vsako podatkovno točko"""
         cluster_indices = np.argmin(all_clusters_dists, axis=0)
+        self.cluster_indices = cluster_indices
 
         """Seznam gruč napolni z indeksi podatkovnih točk, dodeljenih posamezni gruči"""
         for clust_idx in range(self.num_clusters):
