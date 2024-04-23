@@ -8,7 +8,7 @@ def euclidean_distance(instance, cluster_center):
 
 
 class Clustering(Problem):
-    def __init__(self, num_clusters, num_features, dimension, lower=0, upper=1, instances=None, *args, **kwargs):
+    def __init__(self, num_clusters, num_features, dimension, instances, lower=0, upper=1, *args, **kwargs):
         super().__init__(dimension=dimension, lower=lower, upper=upper, *args, **kwargs)
         self.num_clusters = num_clusters
         self.num_features = num_features
