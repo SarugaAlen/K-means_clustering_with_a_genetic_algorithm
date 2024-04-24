@@ -19,10 +19,10 @@ datasets_list = [
 ]
 
 # settings
-population_size = 100
-crossover_probability = 0.8
-mutation_probability = 0.1
-max_evals = 100_000
+population_size = 300
+crossover_probability = 0.9
+mutation_probability = 0.3
+max_evals = 2_000_000
 
 algorithm = GeneticAlgorithm(population_size=population_size, crossover_probability=crossover_probability,
                              mutation_probability=mutation_probability)
@@ -48,7 +48,7 @@ for dataset_name, dataset_data, dataset_labels, num_clusters in datasets_list:
 
     centroids = best_solution.reshape(num_clusters, num_features)
 
-    visualize_clusters(normalized_data, clustering_problem.cluster_indices, centroids, num_clusters,
+    visualize_clusters(normalized_data, dataset_labels, centroids, num_clusters,
                        f'Nia Clustering ({dataset_name})')
 
     silhouette_nia = silhouette_score(normalized_data, clustering_problem.cluster_indices)
