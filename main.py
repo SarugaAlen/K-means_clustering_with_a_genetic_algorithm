@@ -5,9 +5,10 @@ from sklearn import datasets
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import silhouette_score, homogeneity_score
 from sklearn.cluster import KMeans
-
+from sklearn.decomposition import PCA
 from Clustering import Clustering
 from visualization import visualize_clusters
+import time
 
 np.random.seed(30)
 
@@ -19,10 +20,10 @@ datasets_list = [
 ]
 
 # settings
-population_size = 300
+population_size = 1000
 crossover_probability = 0.9
-mutation_probability = 0.3
-max_evals = 2_000_000
+mutation_probability = 0.1
+max_evals = 1_000_000
 
 algorithm = GeneticAlgorithm(population_size=population_size, crossover_probability=crossover_probability,
                              mutation_probability=mutation_probability)
@@ -40,25 +41,27 @@ for dataset_name, dataset_data, dataset_labels, num_clusters in datasets_list:
                        f'KMeans Clustering ({dataset_name})')
 
     # Nia
+    start_time = time.time()
     clustering_problem = Clustering(num_clusters=num_clusters, num_features=num_features,
                                     dimension=num_features * num_clusters, instances=normalized_data, lower=0, upper=1)
     task = Task(problem=clustering_problem, max_evals=max_evals)
-
     best_solution, best_solution_fitness = algorithm.run(task)
-
     centroids = best_solution.reshape(num_clusters, num_features)
-
-    visualize_clusters(normalized_data, dataset_labels, centroids, num_clusters,
-                       f'Nia Clustering ({dataset_name})')
-
     silhouette_nia = silhouette_score(normalized_data, clustering_problem.cluster_indices)
     homogeneity_nia = homogeneity_score(dataset_labels, clustering_problem.cluster_indices)
+    end_time = time.time()
+    execution_time = end_time - start_time
+    minutes = int(execution_time // 60)
+    seconds = int(execution_time % 60)
 
+    print("Nia", dataset_name, "Execution time:", f"{minutes} minutes {seconds} seconds")
+    visualize_clusters(normalized_data, clustering_problem.cluster_indices, centroids, num_clusters,
+                       f'Nia Clustering ({dataset_name})')
+
+    # Output
     print("Dataset:", dataset_name)
-
     print("Silhouette score (KMeans):", silhouette_kmeans)
     print("Homogeneity score (KMeans):", homogeneity_kmeans)
-
     print("Best solution found:", best_solution)
     print("Best solution fitness:", best_solution_fitness)
     print("Silhouette score (Nia):", silhouette_nia)

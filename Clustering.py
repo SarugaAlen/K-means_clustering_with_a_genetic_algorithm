@@ -6,7 +6,6 @@ def euclidean_distance(instance, cluster_center):
     """Izračuna evklidsko razdaljo med instanco in središčem gruče"""
     return np.sqrt(np.sum(np.power(instance - cluster_center, 2), axis=1))
 
-
 class Clustering(Problem):
     def __init__(self, num_clusters, num_features, dimension, instances, lower=0, upper=1, *args, **kwargs):
         super().__init__(dimension=dimension, lower=lower, upper=upper, *args, **kwargs)
@@ -14,6 +13,7 @@ class Clustering(Problem):
         self.num_features = num_features
         self.instances = instances
         self.cluster_indices = None
+
 
     def _evaluate(self, x):
 
@@ -35,7 +35,7 @@ class Clustering(Problem):
 
         """Poišče indeks najbližjega središča gruče za vsako podatkovno točko"""
         cluster_indices = np.argmin(all_clusters_dists, axis=0)
-        self.cluster_indices = cluster_indices
+        self.cluster_indices = np.array(cluster_indices)
 
         """Seznam gruč napolni z indeksi podatkovnih točk, dodeljenih posamezni gruči"""
         for clust_idx in range(self.num_clusters):
