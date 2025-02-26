@@ -17,9 +17,11 @@ jobs:
           python-version: '3.10'
           environment-file: environment.yml
 
-      - name: Install dependencies
+      - name: Install dependencies with mamba
         run: |
-          mamba install --yes --file environment.yml  # Install dependencies specified in the yml file
+          mamba env create --file environment.yml --name base --yes  # Create environment
+          mamba activate base  # Activate the environment
+          mamba install --yes --file environment.yml  # Install dependencies again if needed
 
       - name: Lint with flake8
         run: |
