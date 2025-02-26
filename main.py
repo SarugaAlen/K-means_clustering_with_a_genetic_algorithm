@@ -5,12 +5,9 @@ from sklearn import datasets
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import silhouette_score, homogeneity_score
 from sklearn.cluster import KMeans
-from sklearn.decomposition import PCA
 from Clustering import Clustering
 from visualization import visualize_clusters
-import time
-
-np.random.seed(30)
+import timeit
 
 datasets_list = [
     ("Iris", datasets.load_iris().data[:, :], datasets.load_iris().target, 3),
@@ -19,11 +16,11 @@ datasets_list = [
     ("Noisy Moons", *datasets.make_moons(n_samples=100, noise=0.05), 5),
 ]
 
-# settings
 population_size = 1000
-crossover_probability = 0.9
-mutation_probability = 0.1
-max_evals = 1_000_000
+crossover_probability = 0.7
+mutation_probability = 0.5
+
+max_evals = 500_000
 
 algorithm = GeneticAlgorithm(population_size=population_size, crossover_probability=crossover_probability,
                              mutation_probability=mutation_probability)
@@ -33,15 +30,18 @@ for dataset_name, dataset_data, dataset_labels, num_clusters in datasets_list:
     num_features = dataset_data.shape[1]
 
     # KMeans
+    kmeans_start_time = timeit.default_timer()
     kmeans = KMeans(n_clusters=num_clusters, init='random', n_init='auto', max_iter=300)
     kmeans.fit(normalized_data)
     silhouette_kmeans = silhouette_score(normalized_data, kmeans.labels_)
     homogeneity_kmeans = homogeneity_score(dataset_labels, kmeans.labels_)
     visualize_clusters(normalized_data, kmeans.labels_, kmeans.cluster_centers_, num_clusters,
                        f'KMeans Clustering ({dataset_name})')
+    kmeans_end_time = timeit.default_timer()
+    kmeans_time = kmeans_end_time - kmeans_start_time
 
     # Nia
-    start_time = time.time()
+    nia_start_time = timeit.default_timer()
     clustering_problem = Clustering(num_clusters=num_clusters, num_features=num_features,
                                     dimension=num_features * num_clusters, instances=normalized_data, lower=0, upper=1)
     task = Task(problem=clustering_problem, max_evals=max_evals)
@@ -49,19 +49,17 @@ for dataset_name, dataset_data, dataset_labels, num_clusters in datasets_list:
     centroids = best_solution.reshape(num_clusters, num_features)
     silhouette_nia = silhouette_score(normalized_data, clustering_problem.cluster_indices)
     homogeneity_nia = homogeneity_score(dataset_labels, clustering_problem.cluster_indices)
-    end_time = time.time()
-    execution_time = end_time - start_time
-    minutes = int(execution_time // 60)
-    seconds = int(execution_time % 60)
-
-    print("Nia", dataset_name, "Execution time:", f"{minutes} minutes {seconds} seconds")
     visualize_clusters(normalized_data, clustering_problem.cluster_indices, centroids, num_clusters,
                        f'Nia Clustering ({dataset_name})')
+    nia_end_time = timeit.default_timer()
+    nia_time = nia_end_time - nia_start_time
 
-    # Output
     print("Dataset:", dataset_name)
+    print("KMeans Execution time:", kmeans_time, "seconds")
     print("Silhouette score (KMeans):", silhouette_kmeans)
     print("Homogeneity score (KMeans):", homogeneity_kmeans)
+    print("\n")
+    print("Nia Execution time:", nia_time, "seconds")
     print("Best solution found:", best_solution)
     print("Best solution fitness:", best_solution_fitness)
     print("Silhouette score (Nia):", silhouette_nia)
