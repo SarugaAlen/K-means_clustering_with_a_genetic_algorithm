@@ -12,15 +12,11 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Miniconda
-        uses: conda-incubator/setup-miniconda@v2.0.0
+        uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
           python-version: '3.10'
-          environment-file: environment.yml  
-
-      - name: Install mamba
-        run: |
-          conda install mamba -n base -c conda-forge
+          environment-file: environment.yml
 
       - name: Cache conda
         uses: actions/cache@v3
@@ -32,13 +28,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          mamba env update --file environment.yml --name base
+          mamba install --file environment.yml --name base --yes
 
       - name: Lint with flake8
         run: |
-          mamba run -n base flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          mamba run -n base flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          source activate base  # Activate the base environment
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Test with pytest
         run: |
-          mamba run -n base pytest
+          source activate base  # Activate the base environment
+          pytest
