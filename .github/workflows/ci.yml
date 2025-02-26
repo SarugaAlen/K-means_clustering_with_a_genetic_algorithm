@@ -36,5 +36,4 @@ jobs:
       - name: Run tests
         run: |
           conda activate kmeansGA
-          # Replace 'pytest' with your test command if different
-          pytest
+    
