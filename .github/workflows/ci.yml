@@ -1,0 +1,40 @@
+name: CI Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Miniconda
+        uses: goanpeca/conda-action@v2
+        with:
+          conda-version: 'latest'
+
+      - name: Create conda environment
+        run: conda env create -f environment.yml
+
+      - name: Activate conda environment
+        run: echo "conda activate kmeansGA" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: |
+          conda activate kmeansGA
+          conda install --file environment.yml
+          
+      - name: Run tests
+        run: |
+          conda activate kmeansGA
+          # Replace 'pytest' with your test command if different
+          pytest
