@@ -10,21 +10,32 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v3
+
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v2
         with:
+          auto-update-conda: true
+          miniforge-variant: "mambaforge"
           python-version: '3.10'
-      - name: Install mamba
-        run: |
-          conda install mamba -n base -c conda-forge
+
+      - name: Cache conda
+        uses: actions/cache@v3
+        with:
+          path: ~/.conda
+          key: ${{ runner.os }}-conda-${{ hashFiles('**/environment.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-
+
       - name: Install dependencies
         run: |
           mamba env update --file environment.yml --name base
+
       - name: Lint with flake8
         run: |
           mamba install flake8
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
       - name: Test with pytest
         run: |
           mamba install pytest
